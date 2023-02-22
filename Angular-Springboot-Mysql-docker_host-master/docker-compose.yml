@@ -1,0 +1,76 @@
+version: '3'
+
+services:
+  #db:
+    #image: mysql
+    #command: --default-authentication-plugin=mysql_native_password
+    #restart: always
+    #environment:
+      #MYSQL_DATABASE: testapp
+      #MYSQL_ROOT_PASSWORD: supersecret
+    #ports:
+      #- '3306:3306'
+    #volumes:
+      #- mysql-data:/var/lib/mysql
+    #networks:
+      #- backendNetwork
+      
+  #adminer:
+    #image: adminer
+    #restart: always
+    #ports:
+     # - 8080:8080
+  db:
+    image: mcr.microsoft.com/mssql/server:W2CDBW0008905.corp.heb.com
+    container_name: sqlserver
+    ports:
+      - "1433:1433"
+    restart: always
+    environment:
+     SA_DATABASE: "cProductRecall"
+     SA_USERNAME: "recalluser"
+     SA_PASSWORD: "recalluser1"
+     
+    networks:
+      - backendNetwork       
+      
+  
+  springboot:
+    build:
+      context: Springboot # Use an image built from the specified dockerfile in the `` directory.
+      dockerfile: Dockerfile
+      args:
+        API_BASE_URL: http://127.0.0.1:8081/
+    ports:
+      - 8081:8081
+    depends_on:
+      - db
+    environment: # Pass environment variables to the service
+     SPRING_DATASOURCE_URL: jdbc:sqlserver://W2CDBW0008905.corp.heb.com:1433;databaseName=cProductRecall;encrypt=true;trustServerCertificate=true;
+     SPRING_DATASOURCE_USERNAME: recalluser
+     SPRING_DATASOURCE_PASSWORD: recalluser1      
+    networks:
+      - backendNetwork
+      - frontendNetwork
+
+  angular:
+    build:
+      context: AngularDocker # Use an image built from the specified dockerfile in the `angular-11-social-login` directory.
+      dockerfile: Dockerfile
+      args:
+        API_BASE_URL: http://127.0.0.1:8081/
+    ports:
+      - "4200:80" # Map the exposed port 80 on the container to port 4200 on the host machine
+    restart: always
+    depends_on:
+      - springboot
+    networks:
+      - frontendNetwork
+
+
+volumes:
+  mysql-data:
+  
+networks:
+  backendNetwork:
+  frontendNetwork:

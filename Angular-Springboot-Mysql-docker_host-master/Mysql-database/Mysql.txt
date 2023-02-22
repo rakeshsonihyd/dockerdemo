@@ -1,0 +1,13 @@
+CREATE DATABASE IF NOT EXISTS `testapp`;
+
+use testapp; 
+
+create table user(id long,user_name varchar(255), password varchar(255)); 
+
+insert into user(id,user_name,password) values (1,'Preetha','p12');
+insert into user(id,user_name,password) values (2,'Suresh','p13');
+insert into user(id,user_name,password) values (3,'Martin','p14');
+insert into user(id,user_name,password) values (4,'Mac','p15');
+insert into user(id,user_name,password) values (5,'Bryan','p16');
+insert into user(id,user_name,password) values (6,'Sajana','p17');
+insert into user(id,user_name,password) values (7,'Rakesh','p18');
